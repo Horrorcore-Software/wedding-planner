@@ -6,6 +6,7 @@ import com.horrorcore.weddingplatform.model.*;
 import com.horrorcore.weddingplatform.repository.*;
 import com.horrorcore.weddingplatform.service.payment.PaymentGateway;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,8 @@ public class PaymentService {
 
     public PaymentService(
             PaymentRepository paymentRepository,
-            BookingRepository bookingRepository, PaymentGateway paymentGateway) {
+            BookingRepository bookingRepository,
+            @Qualifier("enhancedStripePaymentGateway") PaymentGateway paymentGateway) {
         this.paymentRepository = paymentRepository;
         this.bookingRepository = bookingRepository;
         this.paymentGateway = paymentGateway;
@@ -156,20 +158,16 @@ public class PaymentService {
         try {
             Payment payment = paymentGateway.confirmPayment(paymentIntentId);
     
-            // Update payment status and handle booking confirmation
-            // Implementation depends on your business logic
             payment.setStatus(PaymentStatus.COMPLETED);
             payment.setProcessedDate(LocalDateTime.now());
             
-            // Save the updated payment
             payment = paymentRepository.save(payment);
     
-            // Update booking status
             updateBookingStatus(payment.getBooking(), payment);
     
             return payment;
         } catch (Exception e) {
-            throw new VendorException("Payment confirmation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new VendorException("Payment confirmation failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
