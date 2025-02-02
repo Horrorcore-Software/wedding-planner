@@ -12,4 +12,6 @@ public interface VendorRepository extends JpaSpecificationExecutor<Vendor>, Pagi
     boolean existsByBusinessName(String businessName);
 
     Optional<Vendor> findById(Long vendorId);
+
+    Vendor save(Vendor vendor);
 }

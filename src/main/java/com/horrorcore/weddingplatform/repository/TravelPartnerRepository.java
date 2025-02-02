@@ -11,4 +11,6 @@ public interface TravelPartnerRepository extends JpaSpecificationExecutor<Travel
     List<TravelPartnerDetails> findByProvidesChauffeur(boolean providesChauffeur);
     List<TravelPartnerDetails> findByServiceAreasContaining(String area);
     List<TravelPartnerDetails> findByFleetTypesContaining(String fleetType);
+
+    TravelPartnerDetails save(TravelPartnerDetails details);
 }
